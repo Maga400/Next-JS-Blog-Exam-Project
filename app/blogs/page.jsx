@@ -1,11 +1,16 @@
+"use client"
+
 import React from "react";
 import { blogs } from "../../data";
 import { format } from "date-fns";
 import Link from "next/link";
+import { useThemeStore } from "@/store";
 
 const Blogs = () => {
+  const theme = useThemeStore((state) => state.theme);
+
   return (
-    <div className="mt-[50px]">
+    <div className={`mt-[50px] ${theme ? "bg-[#181A2A] text-white" : "bg-white text-black"}`}>
       <div className="relative w-full">
         <img
           alt={blogs[0].thumbnail}

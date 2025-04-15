@@ -3,20 +3,27 @@
 import React, { useState } from "react";
 import ThemeToggle from "./ThemeToggle";
 import Link from "next/link";
+import { useThemeStore } from "@/store";
 
 const Navbar = () => {
   const [search, setSearch] = useState("");
+  const theme = useThemeStore((state) => state.theme);
 
   return (
-    <div className="flex flex-row justify-between">
+    <div
+      className={`flex flex-row justify-between ${theme ? "bg-[#181A2A] text-white" : "bg-white text-[#141624]"}`}
+    >
       <div className="flex flex-row justify-start">
-        <img src="/icons/union.svg" className="w-[35px] h-[35px]" />
-        <h3 className="text-[#141624] mt-[4px] ml-[9px] text-[20px]">Meta</h3>
-        <h2 className="text-[#141624] mt-[4px] ml-[2px] text-[20px] font-bold">
-          Blog
-        </h2>
+        <img
+          src={theme ? "/icons/union2.svg" : "/icons/union.svg"}
+          className="w-[35px] h-[35px]"
+        />
+        <h3 className="mt-[4px] ml-[9px] text-[20px]">Meta</h3>
+        <h2 className="mt-[4px] ml-[2px] text-[20px] font-bold">Blog</h2>
       </div>
-      <div className="flex flex-row justify-start text-[#3B3C4A] pt-[5px]">
+      <div
+        className={`flex flex-row justify-start ${theme ? "text-white" : "text-[#3B3C4A]"}  pt-[5px]`}
+      >
         <Link href="/blogs" className="font-normal text-[16px] leading-[24px]">
           Home
         </Link>
@@ -51,7 +58,7 @@ const Navbar = () => {
               setSearch(e.target.value);
             }}
             value={search}
-            className="w-[180px] text-[14px] bg-[#F4F4F5] py-[8px] pl-[10px] pr-[25px] rounded-sm"
+            className={`w-[180px] text-[14px] ${theme ? "bg-[#242535]" : "bg-[#F4F4F5]"}  py-[8px] pl-[10px] pr-[25px] rounded-sm`}
             placeholder="Search..."
           />
           <img
@@ -60,9 +67,12 @@ const Navbar = () => {
           />
         </div>
 
-        <button className="ml-[20px] py-[5px] px-[40px] bg-blue-600 text-white text-[16px] font-semibold rounded-md">
+        <Link
+          href="/sign-in"
+          className={`${theme ? "bg-white text-[#141624]" : "bg-black text-white"} ml-[20px] pt-[7px] px-[40px] text-[16px] font-semibold rounded-md`}
+        >
           Login
-        </button>
+        </Link>
 
         <div className="ml-[20px] pt-[3px]">
           <ThemeToggle />
