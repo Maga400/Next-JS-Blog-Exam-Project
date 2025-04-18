@@ -1,22 +1,62 @@
 "use client";
 
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { useThemeStore } from "@/store";
+import { createClient } from "@/utils/supabase/client";
 
 const AddBlog = () => {
-  const [blog, setBlog] = useState({});
-    const theme = useThemeStore((state) => state.theme);
-  
+  const [blog, setBlog] = useState({
+    title: "",
+    category: "category",
+    thumbnail: "",
+    body: "",
+  });
+  const [categories, setCategories] = useState([]);
+  const theme = useThemeStore((state) => state.theme);
+  const [user, setUser] = useState({});
 
-  const addBlog = async () => {
-    alert(blog.title);
-    alert(blog.category);
-    alert(blog.thumbnail);
-    alert(blog.body);
+  const getCategories = async () => {
+    const response = await fetch("/api/categories");
+    const data = await response.json();
+    setCategories(data.categories);
   };
 
+  const addBlog = async () => {
+    if (!blog.title || blog.category == "category" || !blog.thumbnail || !blog.body) {
+      alert("Please fill all the fields!");
+      return;
+    }
+
+    const response = await fetch("/api/blogs", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify(blog),
+    });
+
+    if (response.ok) {
+      setBlog({ title: "", category: "category", thumbnail: "", body: "" });
+      alert("Blog added successfully!");
+    }
+  };
+
+  const getUserNow = async () => {
+    const supabase = createClient();
+    const myUser = await supabase.auth.getUser();
+    setBlog((prevState) => ({ ...prevState, author: myUser.data.user.id }));
+    setUser(myUser.data.user);
+  };
+
+  useEffect(() => {
+    getCategories();
+    getUserNow();
+  }, []);
+
   return (
-    <div className={`w-full flex flex-col items-center ${theme ? "bg-[#181A2A] text-white" : "bg-white text-[#232536]"}`} >
+    <div
+      className={`w-full flex flex-col items-center ${theme ? "bg-[#181A2A] text-white" : "bg-white text-[#232536]"}`}
+    >
       <h1 className="mt-[50px] text-[48px] leading-[64px] font-bold">
         Write a new blog
       </h1>
@@ -31,7 +71,6 @@ const AddBlog = () => {
         />
         <div className="relative">
           <select
-            value={blog.category}
             onChange={(e) =>
               setBlog((prevState) => ({
                 ...prevState,
@@ -39,14 +78,16 @@ const AddBlog = () => {
               }))
             }
             className="appearance-none w-[700px] text-[#232536] mt-[20px] px-[20px] py-[20px] border-[2px] border-gray-500 rounded-[5px] shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 text-[16px] leading-[28px] bg-white"
-            defaultValue="category"
+            defaultValue={blog.category}
           >
             <option value="category" disabled>
               Select category
             </option>
-            <option value="option1">Option One</option>
-            <option value="option2">Option Two</option>
-            <option value="option3">Option Three</option>
+            {categories?.map((category) => (
+              <option key={category.id} value={category.id}>
+                {category.name}
+              </option>
+            ))}
           </select>
           <div className="pointer-events-none absolute inset-y-0 top-[20px] right-[20px] flex items-center text-gray-500">
             ▼
@@ -76,7 +117,7 @@ const AddBlog = () => {
 
         <button
           onClick={addBlog}
-          type="submit"
+          type="button"
           className="w-full my-[40px] py-[20px] bg-[#FFD050] text-[#232536] text-[24px] leading-[32px] font-bold"
         >
           Submit

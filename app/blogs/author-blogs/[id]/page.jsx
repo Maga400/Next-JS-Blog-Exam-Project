@@ -1,51 +1,40 @@
 "use client";
-import React, { useEffect, useState } from "react";
-import format from "date-fns/format";
+import React, { useState, useEffect } from "react";
 import { useThemeStore } from "@/store";
-import { createClient } from "@/utils/supabase/client";
+import { format } from "date-fns";
 import Link from "next/link";
 
-const page = () => {
-  const theme = useThemeStore((state) => state.theme);
-  const [user, setUser] = useState({});
+const page = ({ params }) => {
+  const { id } = React.use(params);
   const [blogs, setBlogs] = useState([]);
   const [page, setPage] = useState(1);
-
-  const getUserNow = async () => {
-    const supabase = createClient();
-    const myUser = await supabase.auth.getUser();
-    setUser(myUser.data.user);
-  };
+  const theme = useThemeStore((state) => state.theme);
 
   const getBlogs = async () => {
-    const response = await fetch(`/api/author-blogs/${user.id}?page=${page}`);
+    const response = await fetch(`/api/author-blogs/${id}?page=${page}`);
     const data = await response.json();
     setBlogs(data.blogs);
   };
 
   useEffect(() => {
-    getUserNow();
-  }, []);
-
-  useEffect(() => {
-    if (user?.id) {
-      getBlogs();
-    }
-  }, [user, page]);
+    getBlogs();
+  }, [page]);
 
   return (
     <div
-      className={`${theme ? "bg-[#181A2A] text-white" : "bg-white text-[#181A2A]"}`}
+      className={`w-full ${theme ? "bg-[#181A2A] text-white" : "bg-white text-[#181A2A]"}`}
     >
-      <div
-        className={`mt-[30px] py-[50px] text-center w-full ${theme ? "bg-[#242535]" : "bg-[#F6F6F7]"} rounded-[12px]`}
-      >
-        {user?.email && (
-          <h1 className="font-medium text-[20px] leading-[28px] ">
-            {user?.email}
-          </h1>
-        )}
-      </div>
+      {blogs?.length > 0 && (
+        <div
+          className={`mt-[30px] py-[50px] text-center w-full ${theme ? "bg-[#242535]" : "bg-[#F6F6F7]"} rounded-[12px]`}
+        >
+          {blogs[0]?.authors?.email && (
+            <h1 className="font-medium text-[20px] leading-[28px] ">
+              {blogs[0]?.authors?.email}
+            </h1>
+          )}
+        </div>
+      )}
       <h2 className="font-bold text-[24px] leading-[28px] mt-[40px]">
         Latest Post
       </h2>
@@ -84,7 +73,7 @@ const page = () => {
                   src="https://www.pikpng.com/pngl/m/80-805523_default-avatar-svg-png-icon-free-download-264157.png"
                   className="w-[40px] h-[40px] rounded-[100px]"
                 />
-                <div className="flex flex-col ml-[10px]">
+                <div className="ml-[10px]">
                   {blog?.authors?.email && (
                     <h3 className="text-[15px] leading-[20px] font-medium text-[#97989F]">
                       {blog?.authors?.email}

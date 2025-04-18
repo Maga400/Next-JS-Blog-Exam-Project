@@ -1,11 +1,22 @@
 "use client";
 
-import React from "react";
+import React, { useEffect, useState } from "react";
 import { useThemeStore } from "@/store";
+import Link from "next/link";
 
 const Footer = () => {
   const theme = useThemeStore((state) => state.theme);
+  const [categories, setCategories] = useState([]);
 
+  const getCategories = async () => {
+    const response = await fetch("/api/categories");
+    const data = await response.json();
+    setCategories(data.categories);
+  };
+
+  useEffect(() => {
+    getCategories();
+  }, []);
   return (
     <div
       className={`flex flex-col justify-start ${theme ? "text-white" : "text-[#181A2A]"}`}
@@ -40,41 +51,40 @@ const Footer = () => {
           </div>
         </div>
         <div className="flex flex-row">
-          <div>
-            <h2 className="text-[18px] leading-[28px] font-semibold mb-[12px]">
+          <div className="flex flex-col">
+            <h2 className="text-[18px] leading-[28px] font-semibold mb-[5px]">
               Quick Link
             </h2>
-
-            <h3
+            <Link
+              href="/blogs"
               className={`text-[16px]  leading-[24px] mt-[8px] font-normal ${theme ? "text-[#BABABF]" : "text-[#3B3C4A]"}`}
             >
               Home
-            </h3>
-            <h3
+            </Link>
+            <Link
+              href="/blogs/add-blog"
               className={`text-[16px] leading-[24px] mt-[8px] font-normal ${theme ? "text-[#BABABF]" : "text-[#3B3C4A]"}`}
             >
-              About
-            </h3>
-            <h3
+              Write a blog
+            </Link>
+            <Link
+              href="/blogs/my-blogs"
               className={`text-[16px] leading-[24px] mt-[8px] font-normal ${theme ? "text-[#BABABF]" : "text-[#3B3C4A]"}`}
             >
-              Blog
-            </h3>
-            <h3
-              className={`text-[16px] leading-[24px] mt-[8px] font-normal ${theme ? "text-[#BABABF]" : "text-[#3B3C4A]"}`}
-            >
-              Archived
-            </h3>
-            <h3
-              className={`text-[16px] leading-[24px] mt-[8px] font-normal ${theme ? "text-[#BABABF]" : "text-[#3B3C4A]"}`}
-            >
-              Author
-            </h3>
-            <h3
+              My blogs
+            </Link>
+
+            <p
+              onClick={() => {
+                window.scrollTo({
+                  top: document.body.scrollHeight,
+                  behavior: "smooth",
+                });
+              }}
               className={`text-[16px] leading-[24px] mt-[8px] font-normal ${theme ? "text-[#BABABF]" : "text-[#3B3C4A]"}`}
             >
               Contact
-            </h3>
+            </p>
           </div>
 
           <div className="ml-[80px]">
@@ -82,36 +92,15 @@ const Footer = () => {
               Category
             </h2>
 
-            <h3
-              className={`text-[16px] leading-[24px] mt-[8px] font-normal ${theme ? "text-[#BABABF]" : "text-[#3B3C4A]"}`}
-            >
-              Lifestyle
-            </h3>
-            <h3
-              className={`text-[16px] leading-[24px] mt-[8px] font-normal ${theme ? "text-[#BABABF]" : "text-[#3B3C4A]"}`}
-            >
-              Technology
-            </h3>
-            <h3
-              className={`text-[16px] leading-[24px] mt-[8px] font-normal ${theme ? "text-[#BABABF]" : "text-[#3B3C4A]"}`}
-            >
-              Travel
-            </h3>
-            <h3
-              className={`text-[16px] leading-[24px] mt-[8px] font-normal ${theme ? "text-[#BABABF]" : "text-[#3B3C4A]"}`}
-            >
-              Business
-            </h3>
-            <h3
-              className={`text-[16px] leading-[24px] mt-[8px] font-normal ${theme ? "text-[#BABABF]" : "text-[#3B3C4A]"}`}
-            >
-              Economy
-            </h3>
-            <h3
-              className={`text-[16px] leading-[24px] mt-[8px] font-normal ${theme ? "text-[#BABABF]" : "text-[#3B3C4A]"}`}
-            >
-              Sports
-            </h3>
+            {categories?.map((category) => (
+              <div key={category?.id}>
+                <h3
+                  className={`text-[16px]  leading-[24px] mt-[8px] font-normal ${theme ? "text-[#BABABF]" : "text-[#3B3C4A]"}`}
+                >
+                  {category?.name}
+                </h3>
+              </div>
+            ))}
           </div>
         </div>
       </div>
