@@ -4,21 +4,38 @@ import React, { useEffect, useState } from "react";
 import { format } from "date-fns";
 import Link from "next/link";
 import { useThemeStore } from "@/store";
+import { useSearchStore } from "@/store";
 
 const Blogs = () => {
   const theme = useThemeStore((state) => state.theme);
   const [blogs, setBlogs] = useState([]);
   const [page, setPage] = useState(1);
+  const search = useSearchStore((state) => state.search);
+  const [totalPages, setTotalPages] = useState(0);
 
   const getBlogs = async () => {
-    const response = await fetch(`/api/blogs/pagination/${page}`);
+    const response = await fetch(
+      `/api/blogs/pagination/${page}?search=${search}`
+    );
     const data = await response.json();
+    setTotalPages(data.totalPages);
     setBlogs(data.blogs);
+  };
+
+  const pagination = () => {
+    if (totalPages > page) {
+      setPage((prevState) => prevState + 1);
+    }
   };
 
   useEffect(() => {
     getBlogs();
   }, [page]);
+
+  useEffect(() => {
+    setPage(1);
+    getBlogs();
+  }, [search]);
 
   return (
     <div
@@ -117,13 +134,15 @@ const Blogs = () => {
         ))}
       </div>
 
-      <div
-        onClick={() => setPage((prevState) => prevState + 1)}
-        className="m-auto w-fit border-[1px] rounded-[10px] px-[30px] py-[10px] mt-[40px]"
-      >
-        <h2 className="text-[16px] leading-[24px] font-medium text-[#696A75]">
+      <div className="w-full flex flex-row justify-center">
+        <button
+          disabled={totalPages > page ? false : true}
+          onClick={pagination}
+          className="w-fit border-[1px] rounded-[10px] px-[30px] py-[10px] mt-[40px] text-[16px] leading-[24px] font-medium text-[#696A75]"
+        >
           Load More
-        </h2>
+        </button>
+        <img onClick={() => setPage(1)} src= {theme ? "/icons/reset2.svg" : "/icons/reset.svg"}  className="mt-[40px] ml-[20px]" width={30} height={30} />
       </div>
     </div>
   );

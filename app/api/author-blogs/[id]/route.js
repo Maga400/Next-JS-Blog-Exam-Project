@@ -5,6 +5,7 @@ export async function GET(req, { params }) {
   const { id } = params;
   const pageParam = req.nextUrl.searchParams.get("page");
   const page = parseInt(pageParam) || 1;
+  const search = req.nextUrl.searchParams.get("search") || "";
 
   const limit = 3;
   const from = (page - 1) * limit;
@@ -14,18 +15,21 @@ export async function GET(req, { params }) {
     .from("blogs")
     .select(`*,authors(*),categories(id,name)`)
     .eq("author", id)
+    .ilike("title", `%${search}%`)
     .range(from, to);
 
-  if (error) {
-    return new Response(JSON.stringify({ error: error.message }), {
-      status: 500,
-      headers: { "Content-Type": "application/json" },
-    });
-  }
+  const { count, error2 } = await supabase
+    .from("blogs")
+    .select(`*,authors(*),categories(id,name)`, { count: "exact", head: true })
+    .ilike("title", `%${search}%`)
+    .eq("author", id);
+
+  const pages = count / limit;
 
   return new Response(
     JSON.stringify({
       blogs: data,
+      totalPages: pages,
       message: "Author blogs with id returned successfully!",
     }),
     {

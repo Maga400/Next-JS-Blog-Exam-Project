@@ -1,13 +1,20 @@
 "use client";
 
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import ThemeToggle from "./ThemeToggle";
 import Link from "next/link";
 import { useThemeStore } from "@/store";
+import { useSearchStore } from "@/store";
 
 const Navbar = () => {
-  const [search, setSearch] = useState("");
+  const [mySearch, setMySearch] = useState("");
   const theme = useThemeStore((state) => state.theme);
+  const setSearchStore = useSearchStore((state) => state.setSearch);
+
+  const search = useSearchStore((state) => state.search);
+  useEffect(() => {
+    setMySearch(search);
+  }, []);
 
   return (
     <div
@@ -22,7 +29,7 @@ const Navbar = () => {
         <h2 className="mt-[4px] ml-[2px] text-[20px] font-bold">Blog</h2>
       </div>
       <div
-        className={`flex flex-row justify-start ${theme ? "text-white" : "text-[#3B3C4A]"}  pt-[5px]`}
+        className={`flex flex-row justify-start ${theme ? "text-white" : "text-[#3B3C4A]"} pt-[5px]`}
       >
         <Link href="/blogs" className="font-normal text-[16px] leading-[24px]">
           Home
@@ -46,19 +53,20 @@ const Navbar = () => {
               behavior: "smooth",
             });
           }}
-          className="font-normal text-[16px] leading-[24px] ml-[40px]"
+          className="font-normal text-[16px] leading-[24px] ml-[40px] cursor-pointer"
         >
           Contact
         </p>
       </div>
       <div className="flex flex-row justify-between">
-        <div className="flex flex-row relative ">
+        <div className="flex flex-row relative">
           <input
             onChange={(e) => {
-              setSearch(e.target.value);
+              setMySearch(e.target.value);
+              setSearchStore(e.target.value);
             }}
             value={search}
-            className={`w-[180px] text-[14px] ${theme ? "bg-[#242535]" : "bg-[#F4F4F5]"}  py-[8px] pl-[10px] pr-[25px] rounded-sm`}
+            className={`w-[180px] text-[14px] ${theme ? "bg-[#242535]" : "bg-[#F4F4F5]"} py-[8px] pl-[10px] pr-[25px] rounded-sm`}
             placeholder="Search..."
           />
           <img
