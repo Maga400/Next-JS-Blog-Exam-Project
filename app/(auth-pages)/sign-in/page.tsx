@@ -46,10 +46,15 @@ export default function Login(props: { searchParams: Promise<Message> }) {
             placeholder="Your password"
             required
           />
-          <SubmitButton pendingText="Signing In..." formAction={signInAction}>
+
+          <SubmitButton
+            className="bg-red-700"
+            pendingText="Signing In..."
+            formAction={signInAction}
+          >
             Sign in
           </SubmitButton>
-          <FormMessage message={searchParams}  />
+          <FormMessage message={searchParams} />
         </div>
       </form>
     </div>

@@ -9,9 +9,7 @@ import Link from "next/link";
 import { useThemeStore } from "@/store";
 import React from "react";
 
-export default function Signup(props: {
-  searchParams: Promise<Message>;
-}) {
+export default function Signup(props: { searchParams: Promise<Message> }) {
   const searchParams = React.use(props.searchParams);
   if ("message" in searchParams) {
     return (
@@ -24,7 +22,9 @@ export default function Signup(props: {
   const theme = useThemeStore((state) => state.theme);
 
   return (
-    <div className={`w-full h-screen flex justify-center items-center ${theme ? "bg-[#181A2A] text-white" : "bg-white text-[#232536]"}`}>
+    <div
+      className={`w-full h-screen flex justify-center items-center ${theme ? "bg-[#181A2A] text-white" : "bg-white text-[#232536]"}`}
+    >
       <form className="flex flex-col w-[400px] p-5 border border-zinc-300 rounded-md">
         <h1 className="text-2xl font-medium">Sign up</h1>
         <p className="text-sm">
@@ -35,18 +35,28 @@ export default function Signup(props: {
         </p>
         <div className="flex flex-col gap-2 [&>input]:mb-3 mt-8">
           <Label htmlFor="email">Email</Label>
-          <Input className={`${theme ? "bg-[#181A2A] text-white" : "bg-white text-[#232536]"}`} name="email" placeholder="you@example.com" required />
+          <Input
+            className={`${theme ? "bg-[#181A2A] text-white" : "bg-white text-[#232536]"}`}
+            name="email"
+            placeholder="you@example.com"
+            required
+          />
 
           <Label htmlFor="password">Password</Label>
           <Input
-          className={`${theme ? "bg-[#181A2A] text-white" : "bg-white text-[#232536]"}`}
+            className={`${theme ? "bg-[#181A2A] text-white" : "bg-white text-[#232536]"}`}
             type="password"
             name="password"
             placeholder="Your password"
             minLength={6}
             required
           />
-          <SubmitButton  formAction={signUpAction} pendingText="Signing up...">
+
+          <SubmitButton
+            className="bg-red-700"
+            formAction={signUpAction}
+            pendingText="Signing up..."
+          >
             Sign up
           </SubmitButton>
           <FormMessage message={searchParams} />

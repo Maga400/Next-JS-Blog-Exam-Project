@@ -58,7 +58,7 @@ const page = ({ params }) => {
           <Link
             href={`/blogs/${blog?.id}`}
             key={blog?.id}
-            className="w-fit border-[1px] border-[#E8E8EA] rounded-[12px] p-[15px] flex flex-col justify-between"
+            className="w-full border-[1px] border-[#E8E8EA] rounded-[12px] p-[15px] flex flex-col justify-between"
           >
             <header>
               {blog?.thumbnail && (
