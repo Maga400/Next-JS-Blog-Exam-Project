@@ -3,6 +3,7 @@
 import React, { useEffect, useState } from "react";
 import { useThemeStore } from "@/store";
 import { createClient } from "@/utils/supabase/client";
+// import TextEditor from "@/components/TextEditor";
 
 const AddBlog = () => {
   const [blog, setBlog] = useState({
@@ -11,6 +12,9 @@ const AddBlog = () => {
     thumbnail: "",
     body: "",
   });
+
+  const [blogBody, setBlogBody] = useState("");
+
   const [categories, setCategories] = useState([]);
   const theme = useThemeStore((state) => state.theme);
   const [user, setUser] = useState({});
@@ -22,7 +26,12 @@ const AddBlog = () => {
   };
 
   const addBlog = async () => {
-    if (!blog.title || blog.category == "category" || !blog.thumbnail || !blog.body) {
+    if (
+      !blog.title ||
+      blog.category == "category" ||
+      !blog.thumbnail ||
+      !blog.body
+    ) {
       alert("Please fill all the fields!");
       return;
     }
@@ -37,6 +46,7 @@ const AddBlog = () => {
 
     if (response.ok) {
       setBlog({ title: "", category: "category", thumbnail: "", body: "" });
+      setBlogBody("");
       alert("Blog added successfully!");
     }
   };
@@ -52,6 +62,10 @@ const AddBlog = () => {
     getCategories();
     getUserNow();
   }, []);
+
+  useEffect(() => {
+    setBlog((prevState) => ({ ...prevState, body: blogBody }));
+  }, [blogBody]);
 
   return (
     <div
@@ -106,6 +120,7 @@ const AddBlog = () => {
           className="w-[700px] mt-[20px] pl-[20px] py-[20px] text-[16px] leading-[28px] text-[#232536] border-[2px] border-gray-500 rounded-[5px]"
         />
 
+
         <textarea
           value={blog.body}
           onChange={(e) =>
@@ -114,6 +129,14 @@ const AddBlog = () => {
           placeholder="Add blog body"
           className="w-[700px] h-[350px] mt-[20px] px-[30px] py-[30px] text-[16px] leading-[28px] text-[#232536] border-[2px] border-gray-500 rounded-[5px]"
         />
+
+        {/* <div
+          id="headers"
+          className="mt-[30px]"
+          dangerouslySetInnerHTML={{ __html: blog.body }}
+        /> */}
+
+        {/* <TextEditor setBlogBody={setBlogBody} /> */}
 
         <button
           onClick={addBlog}

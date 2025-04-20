@@ -2,6 +2,9 @@
 @tailwind components;
 @tailwind utilities;
 
+@import "../app/_variables.scss";
+@import "../app/keyframe-animations.scss";
+
 @layer base {
   :root {
     --background: 0 0% 100%;
@@ -69,7 +72,7 @@
 }
 
 
-#headers h3{
+#headers h1,h2,h3,h4,h5,h6{
   font-weight: 600;
   font-size: 1.5rem;
 }

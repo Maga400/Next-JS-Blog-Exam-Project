@@ -1,7 +1,7 @@
 "use client"
 
 import { Geist } from "next/font/google";
-import "./globals.css";
+import "./globals.scss";
 import Navbar from "../components/Navbar";
 import MyFooter from "../components/Footer";
 import { useThemeStore } from "@/store";

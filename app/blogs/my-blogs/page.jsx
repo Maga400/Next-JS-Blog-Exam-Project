@@ -15,13 +15,15 @@ const page = () => {
   const [totalPages, setTotalPages] = useState(0);
 
   const getUserNow = async () => {
-    const supabase = createClient();
+    const supabase = await createClient();
     const myUser = await supabase.auth.getUser();
     setUser(myUser.data.user);
   };
 
   const getBlogs = async () => {
-    const response = await fetch(`/api/author-blogs/${user.id}?page=${page}&search=${search}`);
+    const response = await fetch(
+      `/api/author-blogs/${user.id}?page=${page}&search=${search}`
+    );
     const data = await response.json();
     setBlogs(data.blogs);
     setTotalPages(data.totalPages);
@@ -44,8 +46,10 @@ const page = () => {
   }, [user, page]);
 
   useEffect(() => {
+    if (user?.id) {
+      getBlogs();
+    }
     setPage(1);
-    getBlogs();
   }, [search]);
 
   return (
@@ -125,7 +129,13 @@ const page = () => {
         >
           Load More
         </button>
-        <img onClick={() => setPage(1)} src= {theme ? "/icons/reset2.svg" : "/icons/reset.svg"}  className="mt-[40px] ml-[20px]" width={30} height={30} />
+        <img
+          onClick={() => setPage(1)}
+          src={theme ? "/icons/reset2.svg" : "/icons/reset.svg"}
+          className="mt-[40px] ml-[20px]"
+          width={30}
+          height={30}
+        />
       </div>
     </div>
   );
