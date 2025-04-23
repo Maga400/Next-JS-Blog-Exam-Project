@@ -4,6 +4,7 @@ import { useThemeStore } from "@/store";
 import { format } from "date-fns";
 import Link from "next/link";
 import { useSearchStore } from "@/store";
+import Loading from "@/components/loading";
 
 const page = ({ params }) => {
   const { id } = React.use(params);
@@ -12,14 +13,24 @@ const page = ({ params }) => {
   const theme = useThemeStore((state) => state.theme);
   const search = useSearchStore((state) => state.search);
   const [totalPages, setTotalPages] = useState(0);
+  const [loading, setLoading] = useState(true);
 
   const getBlogs = async () => {
-    const response = await fetch(`/api/author-blogs/${id}?page=${page}&search=${search}`);
-    const data = await response.json();
-    setBlogs(data.blogs);
-    setTotalPages(data.totalPages);
+    try {
+      setLoading(true);
+      const response = await fetch(
+        `/api/author-blogs/${id}?page=${page}&search=${search}`
+      );
+      const data = await response.json();
+      setBlogs(data.blogs);
+      setTotalPages(data.totalPages);
+    } catch (error) {
+      console.error(error);
+    } finally {
+      setLoading(false);
+    }
   };
-  
+
   const pagination = () => {
     if (totalPages > page) {
       setPage((prevState) => prevState + 1);
@@ -34,6 +45,14 @@ const page = ({ params }) => {
     setPage(1);
     getBlogs();
   }, [search]);
+
+  if (loading) {
+    return (
+      <div className="flex justify-center items-center mt-[50px]">
+        <Loading />
+      </div>
+    );
+  }
 
   return (
     <div
@@ -114,7 +133,13 @@ const page = ({ params }) => {
         >
           Load More
         </button>
-        <img onClick={() => setPage(1)} src= {theme ? "/icons/reset2.svg" : "/icons/reset.svg"}  className="mt-[40px] ml-[20px]" width={30} height={30} />
+        <img
+          onClick={() => setPage(1)}
+          src={theme ? "/icons/reset2.svg" : "/icons/reset.svg"}
+          className="mt-[40px] ml-[20px]"
+          width={30}
+          height={30}
+        />
       </div>
     </div>
   );

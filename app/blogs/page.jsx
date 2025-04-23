@@ -5,6 +5,7 @@ import { format } from "date-fns";
 import Link from "next/link";
 import { useThemeStore } from "@/store";
 import { useSearchStore } from "@/store";
+import Loading from "@/components/loading";
 
 const Blogs = () => {
   const theme = useThemeStore((state) => state.theme);
@@ -12,14 +13,22 @@ const Blogs = () => {
   const [page, setPage] = useState(1);
   const search = useSearchStore((state) => state.search);
   const [totalPages, setTotalPages] = useState(0);
+  const [loading, setLoading] = useState(true);
 
   const getBlogs = async () => {
-    const response = await fetch(
-      `/api/blogs/pagination/${page}?search=${search}`
-    );
-    const data = await response.json();
-    setTotalPages(data.totalPages);
-    setBlogs(data.blogs);
+    try {
+      setLoading(true);
+      const response = await fetch(
+        `/api/blogs/pagination/${page}?search=${search}`
+      );
+      const data = await response.json();
+      setTotalPages(data.totalPages);
+      setBlogs(data.blogs);
+    } catch (error) {
+      console.error(error);
+    } finally {
+      setLoading(false);
+    }
   };
 
   const pagination = () => {
@@ -37,49 +46,59 @@ const Blogs = () => {
     getBlogs();
   }, [search]);
 
+  if (loading) {
+    return (
+      <div className="flex justify-center items-center mt-[50px]">
+        <Loading />
+      </div>
+    );
+  }
+
   return (
     <div
       className={`mt-[50px] ${theme ? "bg-[#181A2A] text-white" : "bg-white text-black"}`}
     >
-      <div className="relative w-full">
-        {blogs[0]?.thumbnail && (
-          <img
-            alt={blogs[0]?.thumbnail}
-            className="w-full h-[450px] rounded-[20px]"
-            src={blogs[0]?.thumbnail}
-          />
-        )}
-        <div className="absolute bottom-[40px] left-[40px] right-[40px] w-full">
-          {blogs[0]?.categories?.name && (
-            <div className="w-fit mt-[25px] bg-[#4B6BFB] rounded-[5px]">
-              <h3 className="text-[14px] px-[10px] py-[5px] text-white leading-[20px] font-medium">
-                {blogs[0]?.categories?.name}
-              </h3>
-            </div>
-          )}
-          {blogs[0]?.title && (
-            <p className="w-[60%] text-[36px] mt-[15px] leading-[40px] font-semibold text-white">
-              {blogs[0]?.title}
-            </p>
-          )}
-          <div className="w-fit flex flex-row mt-[25px]">
+      {blogs[0]?.thumbnail && (
+        <div className="relative w-full">
+          {blogs[0]?.thumbnail && (
             <img
-              src="https://www.pikpng.com/pngl/m/80-805523_default-avatar-svg-png-icon-free-download-264157.png"
-              className="w-[40px] h-[40px] rounded-[100px]"
+              alt={blogs[0]?.thumbnail}
+              className="w-full h-[450px] rounded-[20px]"
+              src={blogs[0]?.thumbnail}
             />
-            {blogs[0]?.authors?.email && (
-              <h3 className="text-[16px] leading-[24px] font-medium text-[white] ml-[10px] mt-[10px]">
-                {blogs[0]?.authors?.email}
-              </h3>
+          )}
+          <div className="absolute bottom-[40px] left-[40px] right-[40px] w-full">
+            {blogs[0]?.categories?.name && (
+              <div className="w-fit mt-[25px] bg-[#4B6BFB] rounded-[5px]">
+                <h3 className="text-[14px] px-[10px] py-[5px] text-white leading-[20px] font-medium">
+                  {blogs[0]?.categories?.name}
+                </h3>
+              </div>
             )}
-            {blogs[0]?.created_at && (
-              <h3 className="text-[16px] leading-[24px] font-normal text-[white] ml-[30px] mt-[10px]">
-                {format(new Date(blogs[0].created_at), "d MMMM yyyy")}
-              </h3>
+            {blogs[0]?.title && (
+              <p className="w-[60%] text-[36px] mt-[15px] leading-[40px] font-semibold text-white">
+                {blogs[0]?.title}
+              </p>
             )}
+            <div className="w-fit flex flex-row mt-[25px]">
+              <img
+                src="https://www.pikpng.com/pngl/m/80-805523_default-avatar-svg-png-icon-free-download-264157.png"
+                className="w-[40px] h-[40px] rounded-[100px]"
+              />
+              {blogs[0]?.authors?.email && (
+                <h3 className="text-[16px] leading-[24px] font-medium text-[white] ml-[10px] mt-[10px]">
+                  {blogs[0]?.authors?.email}
+                </h3>
+              )}
+              {blogs[0]?.created_at && (
+                <h3 className="text-[16px] leading-[24px] font-normal text-[white] ml-[30px] mt-[10px]">
+                  {format(new Date(blogs[0].created_at), "d MMMM yyyy")}
+                </h3>
+              )}
+            </div>
           </div>
         </div>
-      </div>
+      )}
 
       <div className="mt-[65px] grid grid-cols-3 gap-[20px]">
         {blogs?.map((blog) => (
@@ -142,7 +161,13 @@ const Blogs = () => {
         >
           Load More
         </button>
-        <img onClick={() => setPage(1)} src= {theme ? "/icons/reset2.svg" : "/icons/reset.svg"}  className="mt-[40px] ml-[20px]" width={30} height={30} />
+        <img
+          onClick={() => setPage(1)}
+          src={theme ? "/icons/reset2.svg" : "/icons/reset.svg"}
+          className="mt-[40px] ml-[20px]"
+          width={30}
+          height={30}
+        />
       </div>
     </div>
   );

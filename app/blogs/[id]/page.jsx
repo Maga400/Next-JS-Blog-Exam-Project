@@ -4,28 +4,52 @@ import React, { useEffect, useState } from "react";
 import { format } from "date-fns";
 import Link from "next/link";
 import { createClient } from "@/utils/supabase/client";
+import Loading from "@/components/loading";
 
 const Blog = ({ params }) => {
   const { id } = React.use(params);
   const [user, setUser] = useState({});
   const [blog, setBlog] = useState();
+  const [loading, setLoading] = useState(true);
 
   const getBlog = async () => {
-    const response = await fetch(`/api/blogs/${id}`);
-    const data = await response.json();
-    setBlog(data.blog);
+    try {
+      setLoading(true);
+      const response = await fetch(`/api/blogs/${id}`);
+      const data = await response.json();
+      setBlog(data.blog);
+    } catch (error) {
+      console.error(error);
+    } finally {
+      setLoading(false);
+    }
   };
 
   const getUser = async () => {
-    const supabase = createClient();
-    const myUser = await supabase.auth.getUser();
-    setUser(myUser.data.user);
+    try {
+      setLoading(true);
+      const supabase = createClient();
+      const myUser = await supabase.auth.getUser();
+      setUser(myUser.data.user);
+    } catch (error) {
+      console.error(error);
+    } finally {
+      setLoading(false);
+    }
   };
 
   useEffect(() => {
     getUser();
     getBlog();
   }, []);
+
+  if (loading) {
+    return (
+      <div className="flex justify-center items-center mt-[50px]">
+        <Loading />
+      </div>
+    );
+  }
 
   return (
     <div className="w-full flex flex-col px-[210px]">
@@ -43,13 +67,19 @@ const Blog = ({ params }) => {
           </p>
         )}
         <Link
-          href={user.id == blog?.authors?.id ? `/blogs/my-blogs` : `/blogs/author-blogs/${blog?.authors?.id || blog?.author}`}
+          href={
+            user.id == blog?.authors?.id
+              ? `/blogs/my-blogs`
+              : `/blogs/author-blogs/${blog?.authors?.id || blog?.author}`
+          }
           className="w-fit flex flex-row mt-[20px]"
         >
-          <img
-            src="https://www.pikpng.com/pngl/m/80-805523_default-avatar-svg-png-icon-free-download-264157.png"
-            className="w-[40px] h-[40px] rounded-[100px]"
-          />
+          {blog?.authors?.email && (
+            <img
+              src="https://www.pikpng.com/pngl/m/80-805523_default-avatar-svg-png-icon-free-download-264157.png"
+              className="w-[40px] h-[40px] rounded-[100px]"
+            />
+          )}
           {blog?.authors?.email && (
             <h3 className="text-[16px] leading-[24px] font-medium text-[#97989F] ml-[10px] mt-[10px]">
               {blog?.authors?.email}

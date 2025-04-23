@@ -3,7 +3,7 @@
 import React, { useEffect, useState } from "react";
 import { useThemeStore } from "@/store";
 import { createClient } from "@/utils/supabase/client";
-// import TextEditor from "@/components/TextEditor";
+import TextEditor from "@/components/TextEditor";
 
 const AddBlog = () => {
   const [blog, setBlog] = useState({
@@ -120,23 +120,16 @@ const AddBlog = () => {
           className="w-[700px] mt-[20px] pl-[20px] py-[20px] text-[16px] leading-[28px] text-[#232536] border-[2px] border-gray-500 rounded-[5px]"
         />
 
-
-        <textarea
+        {/* <textarea
           value={blog.body}
           onChange={(e) =>
             setBlog((prevState) => ({ ...prevState, body: e.target.value }))
           }
           placeholder="Add blog body"
           className="w-[700px] h-[350px] mt-[20px] px-[30px] py-[30px] text-[16px] leading-[28px] text-[#232536] border-[2px] border-gray-500 rounded-[5px]"
-        />
-
-        {/* <div
-          id="headers"
-          className="mt-[30px]"
-          dangerouslySetInnerHTML={{ __html: blog.body }}
         /> */}
 
-        {/* <TextEditor setBlogBody={setBlogBody} /> */}
+        <TextEditor setBlogBody={setBlogBody} />
 
         <button
           onClick={addBlog}
